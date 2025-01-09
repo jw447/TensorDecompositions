@@ -24,6 +24,27 @@ Three unit tests demonstrating different use cases:
     unit_test_2: Random tensor (4th-order)
 '''
 
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start_t = tm.time()
+        result = func(*args, **kwargs)
+        end_t = tm.time()
+        print(f"{func} took {end_t - start_t} seconds.")
+        return result
+    return wrapper
+
+@timer
+def CP_reconstruction(cp_factors: tl.cp_tensor.CPTensor):
+    return tl.cp_to_tensor(cp_factors)
+
+@timer
+def CP_decomposition(tensorX: tl.tensor, rank) -> tl.tensor:
+    '''
+    CP decomposition. Input: tensor, rank
+    '''
+    # ( A rank-r CP decomposes a tensor into a linear combination of r rank-1 tensors )
+    return parafac(tensorX, rank=rank)
+
 # A work example from tensorly
 def work_example():
     print("Work example starts!")
@@ -105,6 +126,6 @@ def unit_test_2():
     
     return
 
-work_example()
-unit_test_1()
-unit_test_2()
+#work_example()
+#unit_test_1()
+#unit_test_2()

@@ -25,12 +25,26 @@ Synthetic tensor (4th-order)
 Random tensor (4th-order)
 '''
 
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start_t = tm.time()
+        result = func(*args, **kwargs)
+        end_t = tm.time()
+        print(f"{func} took {end_t - start_t} seconds.")
+        return result
+    return wrapper
+
 # Evaluate the reconstruction error (relative error) of Tucker decomposition
 def recon_error_eval(tt_factor: list[tl.tensor], tensor: np.array) -> float:
     recon_tensor = tt_to_tensor(tt_factor)
     rel_error = tl.norm(recon_tensor - tensor) / tl.norm(tensor) 
     return rel_error
 
+@timer
+def tensor_train_reconstruction(tt_factor: list[tl.tensor]):
+    return tt_to_tensor(tt_factor)
+
+@timer
 def tensor_train_decomposition(tensorX: tl.tensor, r_max: int, eps: float, verbose: int = 0) -> list[tl.tensor]:
     shape = tensorX.shape  # Get the shape of input tensor: [n1, n2, ..., nd]
     dim = len(shape)       # Get the number of dimension
@@ -146,6 +160,6 @@ def unit_test_3():
     print(f"Reconstruction error = {recon_error}\n")    
     return
 
-unit_test_1()
-unit_test_2()
-unit_test_3()
+#unit_test_1()
+#unit_test_2()
+#unit_test_3()

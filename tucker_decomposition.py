@@ -26,13 +26,27 @@ Three unit tests demonstrating different use cases:
     Random tensor (3rd-order)
 '''
 
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start_t = tm.time()
+        result = func(*args, **kwargs)
+        end_t = tm.time()
+        print(f"{func} took {end_t - start_t} seconds.")
+        return result
+    return wrapper
+
 # Evaluate the reconstruction error (relative error) of Tucker decomposition
 def recon_error_eval(core: np.ndarray, factor: list[np.array], tensor: np.array) -> float:
     recon_tensor = tucker_to_tensor((core, factor))
     rel_error = tl.norm(recon_tensor - tensor) / tl.norm(tensor)
     return rel_error
 
+@timer
+def tucker_reconstruction(core: np.ndarray, factor: list[np.array]):
+    return tucker_to_tensor((core, factor))
+
 # Tucker decomposition (High-order SVD)
+@timer
 def tucker_decomposition(tensor: np.ndarray, rank: list[float], cutoff: float) -> np.ndarray:
     shape = tensor.shape  # Tensor shape [n1, n2, ..., nd]
     order = len(shape)    # order d
@@ -135,7 +149,7 @@ def unit_test_3():
     print(f"Reconstruction error = {recon_error}\n")
     return
 
-unit_test_1()
-unit_test_2()
-unit_test_3()
+#unit_test_1()
+#unit_test_2()
+#unit_test_3()
 
