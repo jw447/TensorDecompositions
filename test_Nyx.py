@@ -28,7 +28,7 @@ def read_hdf5(hdf5_file_path, data_field, chunk=True):
         data_array = np.array(f[dataset_name])
 
     if chunk:
-        chunk_size=(128, 256, 256)
+        chunk_size=(64, 64, 64)
         shape = data_array.shape
         chunks_z, chunks_y, chunks_x = (int(np.ceil(s / c)) for s, c in zip(shape, chunk_size))
         for z in range(chunks_z):
@@ -53,31 +53,31 @@ if __name__ == "__main__":
     data_field = 'native_fields/dark_matter_density'
     data_array = read_hdf5(hdf5_file_path, data_field)
 
-    # tensor train method
-    #r_max = 200
-    for r_max in [1]: # T, 2, 4, 8, 16, 32, 64, 128
-        cutoff = 1e-10
-        print(f"r_max:{r_max}")
-        tt_factor = tensor_train_decomposition(data_array, r_max, cutoff)
-        tt_recon = tensor_train_reconstruction(tt_factor)
-        recon_error = recon_error_eval(tt_recon, data_array)
-        print(f"TT Reconstruction error = {recon_error}\n")
+    ## tensor train method
+    ##r_max = 200
+    #for r_max in [1, 2, 4, 8, 16, 32, 64]: # T, 2, 4, 8, 16, 32, 64, 128
+    #    cutoff = 1e-10
+    #    print(f"r_max:{r_max}")
+    #    tt_factor = tensor_train_decomposition(data_array, r_max, cutoff)
+    #    tt_recon = tensor_train_reconstruction(tt_factor)
+    #    recon_error = recon_error_eval(tt_recon, data_array)
+    #    print(f"TT Reconstruction error = {recon_error}\n")
 
     # cp method
     #rank = 200
-    for rank in [1]: #, 2, 4, 8, 16, 32, 64, 128
+    for rank in [127, 128]: #, 2, 4, 8, 16, 32, 64, 128
         print(f"rank:{rank}")
         cp_result = CP_decomposition(data_array, rank)
         cp_recon = CP_reconstruction(cp_result)
         recon_error = recon_error_eval(cp_recon, data_array)
         print(f"CP Reconstruction error = {recon_error}\n")
 
-    # tucker method
-    #rank = [100, 100, 100]
-    for rank in [[4, 4, 4]]: #, [8, 8, 8], [16, 16, 16], [32, 32, 32], [64, 64, 64], [128, 128, 128]
-        print(f"rank:{rank}")
-        cutoff = 1e-10
-        core, factor, output_rank = tucker_decomposition(data_array, rank, cutoff)
-        tucker_recon = tucker_reconstruction(core, factor)
-        recon_error = recon_error_eval(tucker_recon, data_array)
-        print(f"Tucker Reconstruction error = {recon_error}\n")
+    ## tucker method
+    ##rank = [100, 100, 100]
+    #for rank in [[4, 4, 4], [8, 8, 8], [16, 16, 16], [32, 32, 32], [64, 64, 64]]: #, [8, 8, 8], [16, 16, 16], [32, 32, 32], [64, 64, 64], [128, 128, 128]
+    #    print(f"rank:{rank}")
+    #    cutoff = 1e-10
+    #    core, factor, output_rank = tucker_decomposition(data_array, rank, cutoff)
+    #    tucker_recon = tucker_reconstruction(core, factor)
+    #    recon_error = recon_error_eval(tucker_recon, data_array)
+    #    print(f"Tucker Reconstruction error = {recon_error}\n")
